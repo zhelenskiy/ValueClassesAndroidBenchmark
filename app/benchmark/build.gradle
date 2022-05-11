@@ -1,0 +1,61 @@
+plugins {
+    id 'com.android.library'
+    id 'androidx.benchmark'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    compileSdk 32
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += '-XXLanguage:+ValueClasses'
+    }
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 32
+
+        testInstrumentationRunnerArguments["androidx.benchmark.profiling.mode"] = 'StackSampling'
+
+    }
+
+    testBuildType = "release"
+    buildTypes {
+        debug {
+            // Since debuggable can"t be modified by gradle for library modules,
+            // it must be done in a manifest - see src/androidTest/AndroidManifest.xml
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "benchmark-proguard-rules.pro"
+        }
+        release {
+            isDefault = true
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.test.ext:junit-ktx:1.1.3'
+    implementation 'androidx.benchmark:benchmark:1.0.0-alpha03'
+    testImplementation project(path: ':app')
+    testImplementation "androidx.benchmark:benchmark-junit4:1.0.0"
+
+    testImplementation 'junit:junit:4.13.2'
+
+    testImplementation 'androidx.test:runner:1.4.0'
+    testImplementation 'androidx.test:rules:1.4.0'
+    testImplementation 'androidx.test.ext:junit:1.1.3'
+
+
+
+    // Add your dependencies here. Note that you cannot benchmark code
+    // in an app module this way - you will need to move any code you
+    // want to benchmark to a library module:
+    // https://developer.android.com/studio/projects/android-library#Convert
+
+}

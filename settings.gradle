@@ -1,0 +1,19 @@
+pluginManagement {
+    repositories {
+        maven { url = "file:///Users/Evgeniy.Zhelenskiy/IdeaProjects/kotlin/build/repo" }
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        maven { url = "file:///Users/Evgeniy.Zhelenskiy/IdeaProjects/kotlin/build/repo" }
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "Benchmark"
+include ':app'
+include ':app:benchmark'
