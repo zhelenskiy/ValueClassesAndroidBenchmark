@@ -12,6 +12,6 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-//        assertEquals(2.0, DPointMFVC(2.0, 3.0).x)
+        assertEquals(2.0, DPointMFVC(2.0, 3.0).x, 0.0)
     }
 }
