@@ -6,15 +6,24 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.math.sqrt
 
 @RunWith(AndroidJUnit4::class)
 class ValueClassesGeneration {
+
+    private fun escape(point: DPointMFVC) = Unit
+    private fun escape(point: DPointRegular) = Unit
+
+    private fun escape(point: IPointMFVC) = Unit
+    private fun escape(point: IPointRegular) = Unit
+
+    private fun escape(point: BIPointMFVC) = Unit
+    private fun escape(point: BIPointRegular) = Unit
+    
     @get:Rule
     val benchmarkRule = BenchmarkRule()
 
     @Test
-    fun generateRegular() {
+    fun generateDPointsRegular() {
         var x = 0.0
         var y = 2.0
         var point = DPointRegular(x, y)
@@ -26,7 +35,7 @@ class ValueClassesGeneration {
     }
 
     @Test
-    fun generateMFVC() {
+    fun generateDPointsMFVC() {
         var x = 0.0
         var y = 2.0
         var point = DPointMFVC(x, y)
@@ -37,11 +46,8 @@ class ValueClassesGeneration {
         }
     }
 
-    private fun escape(point: DPointMFVC) = Unit
-    private fun escape(point: DPointRegular) = Unit
-
     @Test
-    fun generateEscapingRegular() {
+    fun generateDPointsEscapingRegular() {
         var x = 0.0
         var y = 2.0
         var point: DPointRegular
@@ -54,7 +60,7 @@ class ValueClassesGeneration {
     }
 
     @Test
-    fun generateEscapingMFVC() {
+    fun generateDPointsEscapingMFVC() {
         var x = 0.0
         var y = 2.0
         var point: DPointMFVC
@@ -65,85 +71,271 @@ class ValueClassesGeneration {
             escape(point)
         }
     }
-}
 
-@RunWith(AndroidJUnit4::class)
-class ValueClassSearch {
-    @get:Rule
-    val benchmarkRule = BenchmarkRule()
-
-    private val phi = (1 + sqrt(5.0)) / 2
-    private val multiplier = 100.0
-
-    private val p1X = -multiplier
-    private val p1Y = -multiplier
-
-    private val p2X = phi * multiplier
-    private val p2Y = phi * multiplier
-
-    private fun Double.square() = this * this
-
-    private fun distance(p1: DPointRegular, p2: DPointRegular) =
-        sqrt((p1.x - p2.x).square() + (p1.y - p2.y).square())
-
-    private fun distance(p1: DPointMFVC, p2: DPointMFVC) =
-        sqrt((p1.x - p2.x).square() + (p1.y - p2.y).square())
-
-
-    private fun searchRegular(threshold: Double) = benchmarkRule.measureRepeated {
-        var p1 = DPointRegular(p1X, p1Y)
-        var p2 = DPointRegular(p2X, p2Y)
-        while (distance(p1, p2) > threshold) {
-            val mid = DPointRegular(p1.x / 2 + p2.x / 2, p1.y / 2 + p2.y / 2)
-            if (mid.x > 0 && mid.y > 0) {
-                p2 = mid
-            } else {
-                p1 = mid
-            }
-        }
-    }
-
-
-    private fun searchMFVC(threshold: Double) = benchmarkRule.measureRepeated {
-        var p1 = DPointMFVC(p1X, p1Y)
-        var p2 = DPointMFVC(p2X, p2Y)
-        while (distance(p1, p2) > threshold) {
-            val mid = DPointMFVC(p1.x / 2 + p2.x / 2, p1.y / 2 + p2.y / 2)
-            if (mid.x > 0 && mid.y > 0) {
-                p2 = mid
-            } else {
-                p1 = mid
-            }
+    @Test
+    fun generateIPointsRegular() {
+        var x = 0
+        var y = 2
+        var point = IPointRegular(x, y)
+        benchmarkRule.measureRepeated {
+            point = IPointRegular(x, y)
+            x++
+            y++
         }
     }
 
     @Test
-    fun `searchMFVC-1e-1`() {
-        searchMFVC(1e-1)
+    fun generateIPointsMFVC() {
+        var x = 0
+        var y = 2
+        var point = IPointMFVC(x, y)
+        benchmarkRule.measureRepeated {
+            point = IPointMFVC(x, y)
+            x++
+            y++
+        }
     }
 
     @Test
-    fun `searchMFVC-1e-3`() {
-        searchMFVC(1e-3)
+    fun generateIPointsEscapingRegular() {
+        var x = 0
+        var y = 2
+        var point: IPointRegular
+        benchmarkRule.measureRepeated {
+            point = IPointRegular(x, y)
+            x++
+            y++
+            escape(point)
+        }
     }
 
     @Test
-    fun `searchMFVC-1e-5`() {
-        searchMFVC(1e-5)
+    fun generateIPointsEscapingMFVC() {
+        var x = 0
+        var y = 2
+        var point: IPointMFVC
+        benchmarkRule.measureRepeated {
+            point = IPointMFVC(x, y)
+            x++
+            y++
+            escape(point)
+        }
+    }
+    private val bigIntsSize = (1 shl 10)
+
+    private val bigInts = (1..bigIntsSize).map { it.toBigInteger() }.toTypedArray()
+    
+    @Suppress("NOTHING_TO_INLINE")
+    private inline fun bigIntOf(n: Int) = bigInts[n and (bigIntsSize - 1)]
+    
+
+    @Test
+    fun generateBIPointsRegular() {
+        var x = 0
+        var y = 2
+        var point = BIPointRegular(bigIntOf(x), bigIntOf(y))
+        benchmarkRule.measureRepeated {
+            point = BIPointRegular(bigIntOf(x), bigIntOf(y))
+            x++
+            y++
+        }
     }
 
     @Test
-    fun `searchRegular-1e-1`() {
-        searchRegular(1e-1)
+    fun generateBIPointsMFVC() {
+        var x = 0
+        var y = 2
+        var point = BIPointMFVC(bigIntOf(x), bigIntOf(y))
+        benchmarkRule.measureRepeated {
+            point = BIPointMFVC(bigIntOf(x), bigIntOf(y))
+            x++
+            y++
+        }
     }
 
     @Test
-    fun `searchRegular-1e-3`() {
-        searchRegular(1e-3)
+    fun generateBIPointsEscapingRegular() {
+        var x = 0
+        var y = 2
+        var point: BIPointRegular
+        benchmarkRule.measureRepeated {
+            point = BIPointRegular(bigIntOf(x), bigIntOf(y))
+            x++
+            y++
+            escape(point)
+        }
     }
 
     @Test
-    fun `searchRegular-1e-5`() {
-        searchRegular(1e-5)
+    fun generateBIPointsEscapingMFVC() {
+        var x = 0
+        var y = 2
+        var point: BIPointMFVC
+        benchmarkRule.measureRepeated {
+            point = BIPointMFVC(bigIntOf(x), bigIntOf(y))
+            x++
+            y++
+            escape(point)
+        }
+    }
+
+    private fun escapeOuter(point: OuterDPointMFVC) = Unit
+    private fun escapeOuter(point: OuterDPointRegular) = Unit
+
+    private fun escapeOuter(point: OuterIPointMFVC) = Unit
+    private fun escapeOuter(point: OuterIPointRegular) = Unit
+
+    private fun escapeOuter(point: OuterBIPointMFVC) = Unit
+    private fun escapeOuter(point: OuterBIPointRegular) = Unit
+
+    @Test
+    fun generateOuterDPointsRegular() {
+        var x = 0.0
+        var y = 2.0
+        var point = OuterDPointRegular(DPointRegular(x, y))
+        benchmarkRule.measureRepeated {
+            point = OuterDPointRegular(DPointRegular(x, y))
+            x++
+            y++
+        }
+    }
+
+    @Test
+    fun generateOuterDPointsMFVC() {
+        var x = 0.0
+        var y = 2.0
+        var point = OuterDPointMFVC(DPointMFVC(x, y))
+        benchmarkRule.measureRepeated {
+            point = OuterDPointMFVC(DPointMFVC(x, y))
+            x++
+            y++
+        }
+    }
+
+    @Test
+    fun generateOuterDPointsEscapingRegular() {
+        var x = 0.0
+        var y = 2.0
+        var point: OuterDPointRegular
+        benchmarkRule.measureRepeated {
+            point = OuterDPointRegular(DPointRegular(x, y))
+            x++
+            y++
+            escapeOuter(point)
+        }
+    }
+
+    @Test
+    fun generateOuterDPointsEscapingMFVC() {
+        var x = 0.0
+        var y = 2.0
+        var point: OuterDPointMFVC
+        benchmarkRule.measureRepeated {
+            point = OuterDPointMFVC(DPointMFVC(x, y))
+            x++
+            y++
+            escapeOuter(point)
+        }
+    }
+
+    @Test
+    fun generateOuterIPointsRegular() {
+        var x = 0
+        var y = 2
+        var point = OuterIPointRegular(IPointRegular(x, y))
+        benchmarkRule.measureRepeated {
+            point = OuterIPointRegular(IPointRegular(x, y))
+            x++
+            y++
+        }
+    }
+
+    @Test
+    fun generateOuterIPointsMFVC() {
+        var x = 0
+        var y = 2
+        var point = OuterIPointMFVC(IPointMFVC(x, y))
+        benchmarkRule.measureRepeated {
+            point = OuterIPointMFVC(IPointMFVC(x, y))
+            x++
+            y++
+        }
+    }
+
+    @Test
+    fun generateOuterIPointsEscapingRegular() {
+        var x = 0
+        var y = 2
+        var point: OuterIPointRegular
+        benchmarkRule.measureRepeated {
+            point = OuterIPointRegular(IPointRegular(x, y))
+            x++
+            y++
+            escapeOuter(point)
+        }
+    }
+
+    @Test
+    fun generateOuterIPointsEscapingMFVC() {
+        var x = 0
+        var y = 2
+        var point: OuterIPointMFVC
+        benchmarkRule.measureRepeated {
+            point = OuterIPointMFVC(IPointMFVC(x, y))
+            x++
+            y++
+            escapeOuter(point)
+        }
+    }
+
+
+    @Test
+    fun generateOuterBIPointsRegular() {
+        var x = 0
+        var y = 2
+        var point = OuterBIPointRegular(BIPointRegular(bigIntOf(x), bigIntOf(y)))
+        benchmarkRule.measureRepeated {
+            point = OuterBIPointRegular(BIPointRegular(bigIntOf(x), bigIntOf(y)))
+            x++
+            y++
+        }
+    }
+
+    @Test
+    fun generateOuterBIPointsMFVC() {
+        var x = 0
+        var y = 2
+        var point = OuterBIPointMFVC(BIPointMFVC(bigIntOf(x), bigIntOf(y)))
+        benchmarkRule.measureRepeated {
+            point = OuterBIPointMFVC(BIPointMFVC(bigIntOf(x), bigIntOf(y)))
+            x++
+            y++
+        }
+    }
+
+    @Test
+    fun generateOuterBIPointsEscapingRegular() {
+        var x = 0
+        var y = 2
+        var point: OuterBIPointRegular
+        benchmarkRule.measureRepeated {
+            point = OuterBIPointRegular(BIPointRegular(bigIntOf(x), bigIntOf(y)))
+            x++
+            y++
+            escapeOuter(point)
+        }
+    }
+
+    @Test
+    fun generateOuterBIPointsEscapingMFVC() {
+        var x = 0
+        var y = 2
+        var point: OuterBIPointMFVC
+        benchmarkRule.measureRepeated {
+            point = OuterBIPointMFVC(BIPointMFVC(bigIntOf(x), bigIntOf(y)))
+            x++
+            y++
+            escapeOuter(point)
+        }
     }
 }

@@ -22,7 +22,7 @@ android {
         targetSdk 32
 
 //        testInstrumentationRunnerArguments["androidx.benchmark.profiling.mode"] = 'StackSampling'
-        testInstrumentationRunnerArguments["androidx.benchmark.iterations"] = '100000'
+//        testInstrumentationRunnerArguments["androidx.benchmark.iterations"] = '10000'
     }
 
     testBuildType = "release"
